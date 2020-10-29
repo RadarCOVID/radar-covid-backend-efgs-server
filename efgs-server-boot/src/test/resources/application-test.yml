@@ -1,0 +1,34 @@
+server:
+  ssl:
+    enabled: false
+    client-auth: need
+    key-store-password: 3fgs-p4ssw0rd
+    trust-store-password: 3fgs-p4ssw0rd
+
+logging:
+  level:
+    root: info
+    es.gob.radarcovid: debug
+
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:12:///
+    username: radarcovid
+    password: radarcovid
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    initialization-mode: always
+  jpa:
+    properties:
+      hibernate:
+        default_schema: dpppt
+
+cloud:
+  aws:
+    region:
+      auto: false
+      static: eu-west-1
+    stack:
+      auto: false
+
+application:
+  log.enabled: false

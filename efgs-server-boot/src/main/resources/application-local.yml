@@ -1,0 +1,19 @@
+application:
+  efgs:
+    upload-diagnosis-keys:
+      enabled: true
+      simulate: false
+      batching.cron: 0 */5 * * * ?
+      url: ${EFGS_WS_TECH}/upload
+    download-diagnosis-keys:
+      enabled: true
+      batching.cron: 0/10 * * * * ?
+      download.url: ${EFGS_WS_TECH}/download
+      audit.url: ${EFGS_WS_TECH}/audit/download
+    clean-batch-job:
+      enabled: false
+      batching.cron: 0 0 0 * * ?
+
+logging:
+  level:
+    es.gob.radarcovid.federationgateway: warn

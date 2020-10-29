@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+
+  backend:
+    image: radarcovid/efgs
+    build:
+      context: ./efgs-server-boot/target/docker
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/RADARCOVID?schema=dpppt
+      DATABASE_USER: radarcovid
+      DATABASE_PSW: radarcovid
+      DATABASE_SCHEMA: dpppt
+      SECURITY_USER_PASSWORD: radarcovid
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    networks:
+      service:
+      persistence:
+
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      TZ: Europe/Madrid
+      POSTGRES_DB: RADARCOVID
+      POSTGRES_USER: radarcovid
+      POSTGRES_PASSWORD: radarcovid
+      POSTGRES_SCHEMA: public
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+    networks:
+      persistence:
+        aliases:
+          - postgres
+
+networks:
+  service:
+  persistence:

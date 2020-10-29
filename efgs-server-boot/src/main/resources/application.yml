@@ -1,0 +1,168 @@
+server:
+  port: ${SERVER_PORT:8080}
+  http2:
+    enabled: true
+  servlet:
+    context-path: ${CONTEXT_PATH:}
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - text/xml
+      - text/css
+      - text/plain
+  ssl:
+    enabled: ${SSL_ENABLED:true}
+    client-auth: need
+    key-store: classpath:radarcovid-ta.jks
+    key-store-password: ${KEYSTORE_PASSWORD:}
+    key-alias: ${KEYSTORE_ALIAS:radarcovid}
+    key-store-type: JKS
+    trust-store: classpath:radarcovid-ta.jks
+    trust-store-password: ${TRUSTSTORE_PASSWORD:}
+    trust-store-type: JKS
+
+management:
+  endpoint.health.probes.enabled: true
+  endpoints:
+    enabled-by-default: ${MANAGEMENT_ENDPOINTS_ENABLED:true}
+    web.exposure.include: '*'
+  server.port: ${MANAGEMENT_PORT:-1}
+  metrics:
+    export:
+      cloudwatch:
+        enabled: true
+        namespace: efgs
+        batch-size: 20
+
+spring:
+  application:
+    name: efgs
+  lifecycle.timeout-per-shutdown-phase: ${LIFECYCLE_TIMEOUT_PER_SHUTDOWN_PHASE:20s}
+  datasource:
+    initialization-mode: never
+    continue-on-error: false
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/RADARCOVID?schema=dpppt}
+    username: ${DATABASE_USER:radarcovid}
+    password: ${DATABASE_PSW:radarcovid}
+    hikari:
+      minimum-idle: ${DATABASE_MIN_IDLE:5}
+      maximum-pool-size: ${DATABASE_MAX_IDLE:20}
+      connection-timeout: ${DATABASE_CONNECTION_TIMEOUT:20000}
+  jpa:
+    hibernate:
+      ddl-auto: none
+      generate-ddl: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        generate_statistics: ${HIBERNATE_GENERATE_STATISTICS:false}
+        jdbc.lob.non_contextual_creation: true
+        default_schema: ${DATABASE_SCHEMA:dpppt}
+        # batch
+        jdbc.batch_size: ${HIBERNATE_BATCH_SIZE:10}
+        order_inserts: ${HIBERNATE_ORDER_INSERTS:true}
+  sleuth:
+    log.slf4j.enabled: true
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:radar}
+      password: ${SECURITY_USER_PASSWORD}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID:}
+      secret-key: ${AWS_SECRET_KEY:}
+    region:
+      auto: ${CLOUD.AWS.REGION.AUTO:false}
+      static: ${CLOUD.AWS.REGION.STATIC:eu-west-1}
+    stack:
+      auto: ${CLOUD.AWS.STACK.AUTO:false}
+
+springdoc:
+  api-docs:
+    path: /openapi/api-docs
+    enabled: ${OPENAPI_ENABLED:true}
+  swagger-ui:
+    path: /openapi/ui
+    enabled: ${OPENAPI_ENABLED:true}
+
+application:
+  log:
+    enabled: ${LOGGABLE_ENABLED:true}
+  openapi:
+    title: es.gob.radarcovid.efgs
+    description: '@project.description@'
+    version: '@project.version@'
+    server: 'https://radarcovid.covid19.gob.es'
+    terms-of-service: https://radarcovid.covid19.gob.es/terms-of-service/use-conditions.html
+    license-name: MPL-2.0
+    license-url: 'https://www.mozilla.org/en-US/MPL/2.0/'
+    security:
+      enabled: ${OPENAPI_SECURITY_ENABLED:true}
+  efgs:
+    credentials:
+      signing:
+        private-key: classpath://nbbs-es-priv.pem
+        public-key: classpath://nbbs-es-pub.pem
+        certificate: classpath://nbbs-es-cert.crt
+        algorithm: RSASSA-PSS
+      authentication:
+        certificate: classpath://nbtls-es-cert.crt
+    retention-days: 6
+    country: 'ES'
+    cert-auth:
+      header-fields:
+        thumbprint: X-SSL-Client-SHA256
+        distinguished-name: X-SSL-Client-DN
+    content-negotiation:
+      protobuf-version: 1.0
+      json-version: 1.0
+    upload-diagnosis-keys:
+      enabled: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_ENABLED:true}
+      country-list: BE,BG,CZ,DK,DE,EE,IE,GR,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE,IS,LI,NO,CH
+      default-values:
+        transmission-risk-level: ${EFGS_DEFAULT_TRANSMISSION_RISK_LEVEL:2}
+        report-type: ${EFGS_DEFAULT_REPORT_TYPE:CONFIRMED_TEST}
+      batching:
+        cron: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_CRON:0 0/10 0 * * ?}
+        lock-limit: 1800000
+      maximum-upload-batch-size: 5000
+      url: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_URL:}
+      retry:
+        max-attempts: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_RETRY_MAX_ATTEMPTS:1}
+        delay: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_RETRY_DELAY:100}
+    download-diagnosis-keys:
+      enabled: ${EFGS_DOWNLOAD_DIAGNOSIS_KEYS_ENABLED:true}
+      batching:
+        cron: ${EFGS_DOWNLOAD_DIAGNOSIS_KEYS_CRON:0 0 0 * * ?}
+        lock-limit: 1800000
+      download:
+        url: ${EFGS_DOWNLOAD_DIAGNOSIS_KEYS_URL:}
+        retry:
+          max-attempts: ${EFGS_DOWNLOAD_DIAGNOSIS_KEYS_RETRY_MAX_ATTEMPTS:1}
+          delay: ${EFGS_DOWNLOAD_DIAGNOSIS_KEYS_RETRY_DELAY:100}
+      audit:
+        url: ${EFGS_AUDIT_DOWNLOAD_DIAGNOSIS_KEYS_URL:}
+        retry:
+          max-attempts: ${EFGS_AUDIT_DOWNLOAD_DIAGNOSIS_KEYS_RETRY_MAX_ATTEMPTS:1}
+          delay: ${EFGS_AUDIT_DOWNLOAD_DIAGNOSIS_KEYS_RETRY_DELAY:100}
+      maximum-download-next-batch-tag: 500
+    clean-batch-job:
+      enabled: ${EFGS_CLEAN_BATCH_JOB_ENABLED:true}
+      batching:
+        cron: ${EFGS_CLEAN_BATCH_JOB_CRON:0 0 1 * * ?}
+        lock-limit: 1800000
+      retention-months: ${EFGS_CLEAN_BATCH_RETENTION_MONTHS:6}
+
+logging:
+  pattern:
+    console: '[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1} - [%X{TRACKING}] [%X{X-B3-TraceId}] - %msg%n'
+  level:
+    root: info
+    es.gob.radarcovid.federationgateway: warn
+    es.gob.radarcovid: debug
+    com.amazonaws: error
