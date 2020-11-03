@@ -9,26 +9,33 @@
  */
 package es.gob.radarcovid.efgs.business.test
 
-import java.time.Instant
-import java.time.LocalDateTime
-
-import org.spockframework.spring.SpringBean
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.client.HttpClientErrorException
-
 import es.gob.radarcovid.common.exception.EfgsCodeError
 import es.gob.radarcovid.common.exception.EfgsServerException
 import es.gob.radarcovid.efgs.business.UploadExposedService
 import es.gob.radarcovid.efgs.client.impl.EfgsUploadDiagnosisKeysClientServiceImpl
 import es.gob.radarcovid.efgs.persistence.BatchJobExecutionDao
 import es.gob.radarcovid.efgs.persistence.entity.GaenExposedEntity
+import es.gob.radarcovid.efgs.persistence.mapper.GaenExposedMapper
 import es.gob.radarcovid.efgs.persistence.model.BatchJobExecutionDto
+import es.gob.radarcovid.efgs.persistence.model.GaenExposedDto
+import es.gob.radarcovid.efgs.persistence.model.UploadKeysPayloadDto
 import es.gob.radarcovid.efgs.persistence.repository.GaenExposedEntityRepository
+import es.gob.radarcovid.federationgateway.batchsigning.BatchSignatureUtils
+import es.gob.radarcovid.federationgateway.batchsigning.BatchSignatureVerifier
+import es.gob.radarcovid.federationgateway.batchsigning.SignatureGenerator
+import eu.interop.federationgateway.model.EfgsProto
 import eu.interop.federationgateway.model.EfgsProto.ReportType
+import org.spockframework.spring.SpringBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import java.time.Instant
+import java.time.LocalDateTime
 
 @SpringBootTest
 @ActiveProfiles('test')
@@ -43,6 +50,15 @@ class UploadExposedServiceTestSpec extends Specification {
 	@Autowired
 	BatchJobExecutionDao batchJobExecutionDao
 
+	@Autowired
+	GaenExposedMapper mapper
+
+	@Autowired
+	SignatureGenerator signatureGenerator
+
+	@Autowired
+	BatchSignatureVerifier batchSignatureVerifier
+
 	@SpringBean
 	EfgsUploadDiagnosisKeysClientServiceImpl efgsUploadDiagnosisKeysClient = Mock()
 
@@ -50,6 +66,7 @@ class UploadExposedServiceTestSpec extends Specification {
 		batchJobExecutionDao.deleteAllBefore(LocalDateTime.now())
 	}
 
+	@Unroll
 	def 'upload diagnosis keys [#key]'(String key, int rollingStartNumber, String originCountry, boolean efgsSharing, boolean result) {
 		given:
 		BatchJobExecutionDto batchDto = batchJobExecutionDao.startBatchJob('upload-test')
@@ -88,6 +105,32 @@ class UploadExposedServiceTestSpec extends Specification {
 		then:
 		EfgsServerException exception = thrown()
 		exception.code == EfgsCodeError.UPLOAD_DIAGNOSIS_KEYS
+	}
+
+	def 'signature'(String key, int rollingStartNumber, String originCountry, boolean efgsSharing, boolean result) {
+		given:
+		GaenExposedEntity entity_before = createExposedEntity(key, rollingStartNumber, originCountry, efgsSharing)
+		GaenExposedDto gaenExposedDto = mapper.entityToDto(entity_before)
+		List<GaenExposedDto> gaenExposedDtoList = new ArrayList<>()
+		gaenExposedDtoList.add(gaenExposedDto)
+
+		UploadKeysPayloadDto uploadKeysPayload = new UploadKeysPayloadDto();
+		uploadKeysPayload.setOriginalKeys(gaenExposedDtoList);
+		List<EfgsProto.DiagnosisKey> diagnosisKeyList = new ArrayList<>();
+		gaenExposedDtoList.stream().map(mapper::dtoToDiagnosisKey).forEach(diagnosisKeyList::add);
+		uploadKeysPayload.setDiagnosisKeyBatch(EfgsProto.DiagnosisKeyBatch.newBuilder().addAllKeys(diagnosisKeyList).build());
+
+		when:
+		uploadKeysPayload.setBatchSignature(signatureGenerator.getSignatureForBytes(
+				BatchSignatureUtils.generateBytesToVerify(uploadKeysPayload.getDiagnosisKeyBatch())));
+
+		then:
+		batchSignatureVerifier.verify(uploadKeysPayload.diagnosisKeyBatch, uploadKeysPayload.batchSignature)
+
+		where:
+		key                | rollingStartNumber                 | originCountry | efgsSharing  | result
+		'testKey31Bytes--' | Instant.now().getEpochSecond()/600 | 'ES'          | true         | true
+
 	}
 
 	def createExposedEntity(String key, int rollingStartNumber, String originCountry, boolean efgsSharing) {
