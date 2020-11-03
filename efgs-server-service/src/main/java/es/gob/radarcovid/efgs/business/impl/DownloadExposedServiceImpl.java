@@ -181,10 +181,16 @@ public class DownloadExposedServiceImpl implements DownloadExposedService {
 	}
 	
 	private String getNextBatchTag(LocalDate downloadDate, String batchTag, String nextBatchTag) {
-		if (StringUtils.isEmpty(batchTag)) {
-			return downloadClientService.download(downloadDate, batchTag).map(EfgsDownload::getBatchTag).orElse(null);
-		} else if (StringUtils.isEmpty(nextBatchTag)) {
-			return downloadClientService.download(downloadDate, batchTag).map(EfgsDownload::getNextBatchTag).orElse(null);
+		try {
+			if (StringUtils.isEmpty(batchTag)) {
+				return downloadClientService.download(downloadDate, batchTag).map(EfgsDownload::getBatchTag).orElse(null);
+			} else if (StringUtils.isEmpty(nextBatchTag)) {
+				return downloadClientService.download(downloadDate, batchTag).map(EfgsDownload::getNextBatchTag).orElse(null);
+			}
+		} catch (Exception e) {
+			log.error("Exception getting next batch tag ({}): {}", downloadDate, e.getMessage(), e);
+			throw new EfgsServerException(EfgsCodeError.DOWNLOAD_DIAGNOSIS_KEYS, String.format("Exception getting next batch tag (%s): %s", 
+					downloadDate, e.getMessage()));
 		}
 		return nextBatchTag;
 	}
