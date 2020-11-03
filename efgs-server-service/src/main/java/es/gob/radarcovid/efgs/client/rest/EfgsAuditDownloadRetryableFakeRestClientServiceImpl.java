@@ -35,9 +35,9 @@ public class EfgsAuditDownloadRetryableFakeRestClientServiceImpl implements Efgs
 
 	@Override
 	public Optional<List<AuditEntry>> auditDownload(LocalDate date, String batchTag) {
-		log.debug("Entering EfgsAuditDownloadRetryableRestClientServiceImpl.auditDownload('{}', '{}')", date, batchTag);
+		log.debug("Entering EfgsAuditDownloadRetryableFakeRestClientServiceImpl.auditDownload('{}', '{}')", date, batchTag);
 		Optional<List<AuditEntry>> result = Optional.ofNullable(diaganosisKeyBatchMap.remove(batchTag)).map(this::generateAuditsEntries);
-		log.debug("Leaving EfgsAuditDownloadRetryableRestClientServiceImpl.auditDownload with: {} results", result.map(List::size).orElse(0));
+		log.debug("Leaving EfgsAuditDownloadRetryableFakeRestClientServiceImpl.auditDownload() with: {} results", result.map(List::size).orElse(0));
 		return result;
 	}
 

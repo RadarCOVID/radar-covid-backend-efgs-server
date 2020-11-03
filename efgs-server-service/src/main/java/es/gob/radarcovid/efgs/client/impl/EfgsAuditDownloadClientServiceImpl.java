@@ -28,7 +28,7 @@ public class EfgsAuditDownloadClientServiceImpl implements EfgsAuditDownloadClie
     public Optional<List<AuditEntry>> auditDownload(LocalDate date, String batchTag) {
         log.debug("Entering EfgsAuditDownloadClientServiceImpl.auditDownload('{}', '{}')", date, batchTag);
         Optional<List<AuditEntry>> result = efgsAuditDownloadClientService.auditDownload(date, batchTag);
-        log.debug("Leaving EfgsAuditDownloadClientServiceImpl.auditDownload with: {} results", result.map(List::size).orElse(0));
+        log.debug("Leaving EfgsAuditDownloadClientServiceImpl.auditDownload() with: {} results", result.map(List::size).orElse(0));
         return result;
     }
     

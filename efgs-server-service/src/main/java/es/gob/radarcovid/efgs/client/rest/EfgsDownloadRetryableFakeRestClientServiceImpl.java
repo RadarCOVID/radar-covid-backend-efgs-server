@@ -42,7 +42,7 @@ public class EfgsDownloadRetryableFakeRestClientServiceImpl implements EfgsDownl
 	
 	@Override
 	public Optional<EfgsDownload> download(LocalDate date, String batchTag) {
-		log.debug("Entering EfgsDownloadClientServiceImpl.download('{}', '{}')", date, batchTag);
+		log.debug("Entering EfgsDownloadRetryableFakeRestClientServiceImpl.download('{}', '{}')", date, batchTag);
 		
 		String newBatchTag = batchTag != null ? batchTag : LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
 		DiagnosisKeyBatch diagnosisKeyBatch = diaganosisKeyBatchMap.computeIfAbsent(newBatchTag, this::generateRandomDiagnosisKeyBatch);
@@ -51,7 +51,7 @@ public class EfgsDownloadRetryableFakeRestClientServiceImpl implements EfgsDownl
 				.diagnosisKeyBatch(diagnosisKeyBatch);
 		Optional<EfgsDownload> result  = Optional.of(builder.build());
 		
-		log.debug("Leaving EfgsDownloadClientServiceImpl.download with: {} results", result.map(d -> d.getDiagnosisKeyBatch().getKeysList().size()).orElse(0));
+		log.debug("Leaving EfgsDownloadRetryableFakeRestClientServiceImpl.download() with: {} results", result.map(d -> d.getDiagnosisKeyBatch().getKeysList().size()).orElse(0));
 		return result;
 	}
 	

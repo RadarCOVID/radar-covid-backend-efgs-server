@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.retry.annotation.CircuitBreaker;
+
 import es.gob.radarcovid.efgs.client.EfgsAuditDownloadClientService;
 import es.gob.radarcovid.efgs.client.model.AuditEntry;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,10 @@ public class EfgsAuditDownloadCircuitBreakerClientImpl implements EfgsAuditDownl
     private final EfgsAuditDownloadClientService efgsAuditDownloadClientService;
 
     @Override
+	@CircuitBreaker(maxAttemptsExpression = "#{${application.efgs.download-diagnosis-keys.audit.circuit-breaker.max-attempts:3}}", 
+		openTimeoutExpression = "#{${application.efgs.download-diagnosis-keys.audit.circuit-breaker.open-timeout:5000}}")
     public Optional<List<AuditEntry>> auditDownload(LocalDate date, String batchTag) {
-        log.debug("Entering EfgsAuditDownloadCircuitBreakerClientImpl.auditDownload()");
+        log.debug("Entering EfgsAuditDownloadCircuitBreakerClientImpl.auditDownload('{}', '{}')", date, batchTag);
         Optional<List<AuditEntry>> result = efgsAuditDownloadClientService.auditDownload(date, batchTag);
         log.debug("Leaving EfgsAuditDownloadCircuitBreakerClientImpl.auditDownload with: {} results", result.map(List::size).orElse(0));
         return result;
