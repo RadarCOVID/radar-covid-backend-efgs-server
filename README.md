@@ -67,6 +67,25 @@ docker-compose up -d postgres
 docker-compose up -d backend
 ```
 
+#### EFGS Federation Gateway service
+
+There are two ways to connect with [EFGS Federation Gateway](https://github.com/eu-federation-gateway-service/efgs-federation-gateway) service:
+
+- Normal. This option provides a connection with the third party service EFGS Gateway. It's necessary to provides gateway urls, so if you up gateway service in local you must change urls on [`application.yml`](./efgs-server-boot/src/main/resources/application.yml).
+
+```shell
+application.efgs.upload-diagnosis-keys.url: localhost:<port>/diagnosiskeys/upload
+application.efgs.download-diagnosis-keys.download.url: localhost:<port>/diagnosiskeys/download
+application.efgs.download-diagnosis-keys.audit.url: localhost:<port>/diagnosiskeys/audit/download
+```
+
+- Simulate. This option returns mocks values and actually doesn't connect with third party services. To enable this option it's necessary to add the following properties on [`application.yml`](./efgs-server-boot/src/main/resources/application.yml).
+
+```shell
+application.efgs.upload-diagnosis-keys.simulate: true
+application.efgs.download-diagnosis-keys.simulate: true
+```
+
 #### Database
 
 This project doesn't use either [Liquibase](https://www.liquibase.org/) or [Flyway](https://flywaydb.org/) because:
@@ -77,7 +96,7 @@ This project doesn't use either [Liquibase](https://www.liquibase.org/) or [Flyw
 We use the same data model as DP3T but include some changes to support EFGS integration. To be able to launch EFGS integration on local environment we copied the SQL files from D3PT and add these 2 files:
 
 - [`V0_8__gaen_efgs.sql`](./sql/V0_8__gaen_efgs.sql). Script to add columns to `t_gaen_exposed` table.
-- [`V0_0__ddl_batch.sql`](./sql/V0_9__ddl_batch.sql). Script to add tables needed to support batch processes (upload and download batches).
+- [`V0_9__ddl_batch.sql`](./sql/V0_9__ddl_batch.sql). Script to add tables needed to support batch processes (upload and download batches).
 
 ### Modules
 
@@ -104,3 +123,4 @@ More details in [CONTRIBUTING.md](./CONTRIBUTING.md).
 ## License
 
 This Source Code Form is subject to the terms of the [Mozilla Public License, v. 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
+
