@@ -9,9 +9,11 @@
  */
 package es.gob.radarcovid.efgs.runner;
 
+import org.slf4j.MDC;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
+import es.gob.radarcovid.efgs.etc.Constants;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public abstract class EfgsRunner implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		args.getNonOptionArgs().stream().filter(arg -> arg.equals(jobName())).findFirst().ifPresent(arg -> run());
+		MDC.remove(Constants.TRACKING);
 	}
 
 	public abstract String jobName();

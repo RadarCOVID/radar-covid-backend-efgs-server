@@ -41,7 +41,6 @@ public class CleanBatchJobExecutionRunner extends EfgsRunner {
 		log.info("CleanBatchJobExecutionRunner started");
 		cleanBatchJobService.cleanBatchJobExecution();		
 		log.info("CleanBatchJobExecutionRunner finished");
-		MDC.remove(Constants.TRACKING);
 	}
 
 }

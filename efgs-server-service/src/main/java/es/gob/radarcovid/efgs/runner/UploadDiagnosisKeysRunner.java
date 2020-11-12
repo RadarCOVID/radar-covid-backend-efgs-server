@@ -59,7 +59,6 @@ public class UploadDiagnosisKeysRunner extends EfgsRunner {
 		}
 
 		log.info("UploadDiagnosisKeysRunner finished");
-		MDC.remove(Constants.TRACKING);
 	}
 
 }

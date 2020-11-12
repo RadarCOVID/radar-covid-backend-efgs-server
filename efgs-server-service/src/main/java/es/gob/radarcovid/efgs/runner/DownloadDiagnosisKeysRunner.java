@@ -58,7 +58,6 @@ public class DownloadDiagnosisKeysRunner extends EfgsRunner {
 		}
 
 		log.info("DownloadDiagnosisKeysRunner finished");
-		MDC.remove(Constants.TRACKING);
 	}
 
 }
