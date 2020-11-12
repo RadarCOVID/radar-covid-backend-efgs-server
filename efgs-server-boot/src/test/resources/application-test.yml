@@ -32,3 +32,11 @@ cloud:
 
 application:
   log.enabled: false
+  
+test:
+  foreign-signing-certs:
+    DE:
+      private-key: classpath://foreignSigningCerts/nbbs-de-priv.pem
+      public-key: classpath://foreignSigningCerts/nbbs-de-pub.pem
+      certificate: classpath://foreignSigningCerts/nbbs-de-cert.crt
+      algorithm: RSASSA-PSS

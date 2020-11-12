@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -142,26 +143,34 @@ public class DownloadExposedServiceImpl implements DownloadExposedService {
 		List<DiagnosisKey> validKeys = new ArrayList<>();
 
 		Map<String, List<DiagnosisKey>> keys = diagnosisKeyBatch.getKeysList().stream()
+				.filter(key -> !efgsProperties.getCountry().equals(key.getOrigin()))
 				.collect(Collectors.groupingBy(DiagnosisKey::getOrigin));
 
 		Map<String, List<AuditEntry>> audits = auditEntries.stream()
+				.filter(audit -> !efgsProperties.getCountry().equals(audit.getCountry()))
 				.collect(Collectors.groupingBy(AuditEntry::getCountry));
 
 		keys.forEach((country, keysByCountry) -> {
-			DiagnosisKeyBatch diagnosisKeyBatchByCountry = DiagnosisKeyBatch.newBuilder().addAllKeys(keysByCountry).build();
-			boolean isValid = Optional.ofNullable(audits.get(country))
-					.map(a -> validateDiagnosisKeyWithSignature(diagnosisKeyBatchByCountry, a))
-					.orElse(false);
-			if (isValid) {
-				validKeys.addAll(keysByCountry);
-			}
+			validKeys.addAll(getValidDiagnosisKeysByCountry(keysByCountry, audits.get(country)));
 		});
 		return validKeys;
 	}
-
 	
-	private boolean validateDiagnosisKeyWithSignature(DiagnosisKeyBatch diagnosisKeyBatch, List<AuditEntry> auditEntries) {
-		return auditEntries.stream().anyMatch(a -> batchSignatureVerifier.verify(diagnosisKeyBatch, a.getBatchSignature()));
+	private List<DiagnosisKey> getValidDiagnosisKeysByCountry(List<DiagnosisKey> diagnosisKeys, List<AuditEntry> auditEntries) {
+		List<DiagnosisKey> validKeys = new ArrayList<>();
+		AtomicLong skip = new AtomicLong(0);
+		
+		auditEntries.stream().forEach(audit -> {
+				List<DiagnosisKey> diagnosisKeysByAudit = diagnosisKeys.stream().skip(skip.get()).limit(audit.getAmount())
+						.collect(Collectors.toList());
+				DiagnosisKeyBatch diagnosisKeyBatchByAudit = DiagnosisKeyBatch.newBuilder().addAllKeys(diagnosisKeysByAudit).build();
+				
+				if (batchSignatureVerifier.verify(diagnosisKeyBatchByAudit, audit.getBatchSignature())) {
+					validKeys.addAll(diagnosisKeysByAudit);
+				}
+				skip.addAndGet(audit.getAmount());
+			});
+		return validKeys;
 	}
 	
 	private int saveAllDiagnosisKeys(DiagnosisKeyBatch diagnosisKeyBatch, LocalDate downloadDate, String batchTag) {

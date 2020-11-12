@@ -12,6 +12,8 @@ package es.gob.radarcovid.efgs.business.test
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+import javax.annotation.Resource
+
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -44,7 +46,7 @@ import spock.lang.Unroll
 @ActiveProfiles('test')
 class DownloadExposedServiceTestSpec extends Specification {
 
-	private static final String COUNTRY = 'ES'
+	private static final String COUNTRY = 'DE'
 
 	private static final LocalDate DAY1 = LocalDate.now().minusDays(4)
 	private static final LocalDate DAY2 = LocalDate.now().minusDays(3)
@@ -63,8 +65,8 @@ class DownloadExposedServiceTestSpec extends Specification {
 	@Autowired
 	DownloadExecutionDao downloadExecutionDao
 
-	@Autowired
-	SignatureGenerator signatureGenerator
+	@Resource(name = 'foreignSignatureGenerators')
+	Map<String, SignatureGenerator> foreignSignatureGenerators
 
 	@SpringBean
 	EfgsDownloadClientServiceImpl efgsDownloadClientService = Mock()
@@ -141,7 +143,8 @@ class DownloadExposedServiceTestSpec extends Specification {
 	def createAuditEntries(String... keys) {
 		AuditEntry audit = new AuditEntry()
 		audit.setCountry(COUNTRY)
-		audit.setBatchSignature(signatureGenerator.getSignatureForBytes(BatchSignatureUtils.generateBytesToVerify(createKeys(keys))))
+		audit.setBatchSignature(foreignSignatureGenerators.get(COUNTRY).getSignatureForBytes(BatchSignatureUtils.generateBytesToVerify(createKeys(keys))))
+		audit.setAmount(keys.length)
 		return Arrays.asList(audit)
 	}
 
