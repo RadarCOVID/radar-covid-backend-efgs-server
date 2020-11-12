@@ -41,10 +41,6 @@ ENV JAVA_TOOL_OPTIONS $JAVA_TOOL_OPTIONS -Xms256M -Xmx1G \
   --add-opens java.management/sun.management=ALL-UNNAMED \
   --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
 
-ENV SERVER_PORT 8080
-
-EXPOSE ${SERVER_PORT}
-
 COPY --from=builder efgs/dependencies/ ./
 COPY --from=builder efgs/spring-boot-loader/ ./
 COPY --from=builder efgs/snapshot-dependencies/ ./

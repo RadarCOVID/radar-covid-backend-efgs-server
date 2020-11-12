@@ -13,6 +13,7 @@ import eu.interop.federationgateway.model.EfgsProto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class EfgsProperties {
     private String country;
 
     private final Credentials credentials = new Credentials();
-    private final CertAuth certAuth = new CertAuth();
+    private final Ssl ssl = new Ssl();
     private final ContentNegotiation contentNegotiation = new ContentNegotiation();
     private final UploadDiagnosisKeys uploadDiagnosisKeys = new UploadDiagnosisKeys();
     private final DownloadDiagnosisKeys downloadDiagnosisKeys = new DownloadDiagnosisKeys();
@@ -56,7 +57,12 @@ public class EfgsProperties {
 
     @Getter
     @Setter
-    public static class CertAuth {
+    public static class Ssl {
+    	private boolean enabled;
+    	private Resource keyStore;
+    	private String keyStorePassword;
+    	private Resource trustStore;
+    	private String trustStorePassword;
         private final HeaderFields headerFields = new HeaderFields();
 
         @Getter
@@ -79,19 +85,10 @@ public class EfgsProperties {
     public static class UploadDiagnosisKeys {
         private boolean enabled;
         private List<String> countryList;
-        private final Batching batching = new Batching();
         private int maximumUploadBatchSize = 5000;
         private String url;
         private final Retry retry = new Retry();
-
         private final Default defaultValues = new Default();
-
-        @Getter
-        @Setter
-        public static class Batching {
-            private int timeInterval = 300000;
-            private int lockLimit = 1800000;
-        }
 
         @Getter
         @Setter
@@ -106,7 +103,6 @@ public class EfgsProperties {
     @Setter
     public static class DownloadDiagnosisKeys {
         private boolean enabled;
-        private final Batching batching = new Batching();
         private final Download download = new Download();
         private final Audit audit = new Audit();
         private int maximumDownloadNextBatchTag = 500;
@@ -130,15 +126,7 @@ public class EfgsProperties {
     @Setter
     public static class CleanBatchJob {
         private boolean enabled;
-        private final Batching batching = new Batching();
         private int retentionMonths = 6;
-    }
-    
-    @Getter
-    @Setter
-    public static class Batching {
-        private String cron;
-        private int lockLimit = 1800000;
     }
 
     @Getter

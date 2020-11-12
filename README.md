@@ -64,8 +64,13 @@ If you want to run the application inside a docker in local, once you built it, 
 
 ```shell
 docker-compose up -d postgres
-docker-compose up -d backend
+docker-compose run backend <job>
 ```
+
+Where `<job>` has these possible values:
+- `uploadDiagnosisKeys`. To upload diagnosis keys to EFGS Gateway.
+- `downloadDiagnosisKeys`. To download diagnosis keys from EFGS Gateway.
+- `cleanBatchJobExecution`. To clean old information in database.
 
 #### EFGS Federation Gateway service
 

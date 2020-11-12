@@ -15,8 +15,6 @@ services:
       SECURITY_USER_PASSWORD: radarcovid
     depends_on:
       - postgres
-    ports:
-      - 8080:8080
     networks:
       service:
       persistence:
