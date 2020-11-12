@@ -7,13 +7,10 @@ application:
       url: ${EFGS_WS_TECH}/upload
     download-diagnosis-keys:
       enabled: true
-      batching.cron: 0/10 * * * * ?
       download.url: ${EFGS_WS_TECH}/download
       audit.url: ${EFGS_WS_TECH}/audit/download
+      simulate: false
+      batching.cron: 0 */5 * * * ?
     clean-batch-job:
-      enabled: false
+      enabled: true
       batching.cron: 0 0 0 * * ?
-
-logging:
-  level:
-    es.gob.radarcovid.federationgateway: warn

@@ -31,7 +31,7 @@ public class ShedLockConfiguration {
     private static final String TABLE_NAME = "shedlock";
 
     @Value("${spring.jpa.properties.hibernate.default_schema:}")
-    private String databaseSchema;
+    private String defaultSchema;
 
     /**
      * Creates a LockProvider for ShedLock.
@@ -41,7 +41,7 @@ public class ShedLockConfiguration {
      */
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
-        String tablename = (StringUtils.isEmpty(databaseSchema) ? "" : databaseSchema + ".") + TABLE_NAME;
+        String tablename = (StringUtils.isEmpty(defaultSchema) ? "" : defaultSchema + ".") + TABLE_NAME;
         return new JdbcTemplateLockProvider(builder()
                 .withTableName(tablename)
                 .withJdbcTemplate(new JdbcTemplate(dataSource))

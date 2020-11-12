@@ -10,24 +10,29 @@
 
 package es.gob.radarcovid.federationgateway.batchsigning;
 
-import eu.interop.federationgateway.model.EfgsProto;
-import lombok.extern.slf4j.Slf4j;
+import java.security.Security;
+import java.security.cert.CertificateException;
+import java.util.Collection;
+import java.util.Date;
+
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.cms.*;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
 import org.springframework.stereotype.Service;
 
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.Date;
+import eu.interop.federationgateway.model.EfgsProto;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains the methods to verify a batch signature.
@@ -50,7 +55,8 @@ public class BatchSignatureVerifier {
      */
     public boolean verify(final EfgsProto.DiagnosisKeyBatch batch, final String base64BatchSignature) {
         final byte[] batchSignatureBytes = BatchSignatureUtils.b64ToBytes(base64BatchSignature);
-        if (batchSignatureBytes != null) {
+        
+        if (batchSignatureBytes.length > 0) {
             try {
                 final CMSSignedData signedData = new CMSSignedData(getBatchBytes(batch), batchSignatureBytes);
                 final SignerInformation signerInfo = getSignerInformation(signedData);
@@ -74,14 +80,9 @@ public class BatchSignatureVerifier {
                               signerCert.getNotBefore(), signerCert.getNotAfter());
                     return false;
                 }
-
-                if (signerInfo == null) {
-                    log.error("no signer information");
-                    return false;
-                }
-
+                
                 return verifySignerInfo(signerInfo, signerCert);
-            } catch (CertificateException | OperatorCreationException | CMSException e) {
+            } catch (CertificateException | OperatorCreationException | CMSException | IllegalArgumentException e) {
                 log.error("error verifying batch signature", e);
             }
         }
@@ -104,32 +105,6 @@ public class BatchSignatureVerifier {
 
         return certificate.getNotBefore().before(now)
                 && certificate.getNotAfter().after(now);
-    }
-
-
-    private boolean isCertificateSignatureValid(final X509CertificateHolder certificate) {
-        try {
-            final X509Certificate x509Certificate = toX509Certificate(certificate);
-            final Signature signature = createSignatureInstance(x509Certificate);
-            signature.initVerify(x509Certificate.getPublicKey());
-            signature.update(x509Certificate.getTBSCertificate());
-            return signature.verify(x509Certificate.getSignature());
-        } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException
-                | NoSuchProviderException e) {
-            log.error("Could not verify signature of signing certificate: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private Signature createSignatureInstance(final X509Certificate x509Certificate)
-            throws NoSuchAlgorithmException, NoSuchProviderException {
-        return Signature.getInstance(x509Certificate.getSigAlgName(), BouncyCastleProvider.PROVIDER_NAME);
-    }
-
-    private X509Certificate toX509Certificate(final X509CertificateHolder certificate) throws CertificateException {
-        final JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
-        converter.setProvider(BouncyCastleProvider.PROVIDER_NAME);
-        return converter.getCertificate(certificate);
     }
 
     private String getCountryOfCertificate(X509CertificateHolder certificate) {
@@ -157,10 +132,10 @@ public class BatchSignatureVerifier {
 
     private X509CertificateHolder getSignerCert(final Store<X509CertificateHolder> certificatesStore,
                                                 final SignerId signerId) {
-        final Collection certCollection = certificatesStore.getMatches(signerId);
+        final Collection<X509CertificateHolder> certCollection = certificatesStore.getMatches(signerId);
 
         if (!certCollection.isEmpty()) {
-            return (X509CertificateHolder) certCollection.iterator().next();
+            return certCollection.iterator().next();
         }
         return null;
     }

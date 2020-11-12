@@ -156,7 +156,7 @@ application:
       batching:
         cron: ${EFGS_CLEAN_BATCH_JOB_CRON:0 0 1 * * ?}
         lock-limit: 1800000
-      retention-months: ${EFGS_CLEAN_BATCH_RETENTION_MONTHS:6}
+      retention-months: 6
 
 logging:
   pattern:
