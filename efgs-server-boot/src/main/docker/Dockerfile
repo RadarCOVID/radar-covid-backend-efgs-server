@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: MPL-2.0
 #
 
-FROM adoptopenjdk:11-jre-hotspot
+FROM adoptopenjdk:11-jre-openj9
 
 # Metadata
 LABEL module.vendor="Radar-COVID"         \
