@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.4.RELEASE</version>
+        <version>2.3.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -27,20 +27,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.version>3.6.0</maven.version>
         <java.version>11</java.version>
-
-        <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
-        <spring-cloud-starter-aws.version>2.2.4.RELEASE</spring-cloud-starter-aws.version>
-
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven.version>3.6.0</maven.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
+        <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
+        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+        <spring-cloud-starter-aws.version>2.2.4.RELEASE</spring-cloud-starter-aws.version>
+
+        <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
+        <plugin.compiler.version>3.8.1</plugin.compiler.version>
+        <plugin.os-maven.version>1.6.2</plugin.os-maven.version>
+        <plugin.owasp.version>6.0.2</plugin.owasp.version>
+
         <archunit.version>0.14.1</archunit.version>
         <auth-jwt.version>3.10.3</auth-jwt.version>
-        <dependency-check-maven.version>6.0.2</dependency-check-maven.version>
         <groovy.version>3.0.5</groovy.version>
         <jackson-bom.version>2.11.2</jackson-bom.version>
         <jackson-protobuf.version>0.9.12</jackson-protobuf.version>
@@ -63,8 +65,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>${plugin.checkstyle.version}</version>
                         <configuration>
-                            <configLocation>plugins/checkstyle.xml</configLocation>
+                            <configLocation>./tools/checkstyle.xml</configLocation>
                             <excludes>target/**/*</excludes>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
@@ -92,7 +95,7 @@
                 <dependency>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>${dependency-check-maven.version}</version>
+                    <version>${plugin.owasp.version}</version>
                     <exclusions>
                         <exclusion>
                             <groupId>commons-logging</groupId>
@@ -106,15 +109,14 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>${dependency-check-maven.version}</version>
+                        <version>${plugin.owasp.version}</version>
                         <configuration>
-                            <!--<suppressionFiles>${basedir}/suppressed.xml</suppressionFiles>-->
+                            <suppressionFiles>./tools/suppressed.xml</suppressionFiles>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
-                            <!--<failBuildOnCVSS>5</failBuildOnCVSS>-->
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>test</phase>
+                                <phase>validate</phase>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
@@ -315,12 +317,19 @@
     </dependencyManagement>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${plugin.os-maven.version}</version>
+            </extension>
+        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
+                    <version>${plugin.compiler.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
@@ -356,11 +365,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.1.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila</groupId>
@@ -422,9 +426,10 @@
                 <configuration>
                     <licenseSets>
                         <licenseSet>
-                            <header>plugins/LICENSE-MPL2.txt</header>
+                            <header>tools/LICENSE-MPL2.txt</header>
                             <excludes>
                                 <exclude>**/*.adoc</exclude>
+                                <exclude>**/*.md</exclude>
                                 <exclude>**/*.sql</exclude>
                                 <exclude>**/*.txt</exclude>
                                 <exclude>**/*.yaml</exclude>

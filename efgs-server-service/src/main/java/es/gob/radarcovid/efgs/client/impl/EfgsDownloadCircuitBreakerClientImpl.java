@@ -12,6 +12,8 @@ package es.gob.radarcovid.efgs.client.impl;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.springframework.retry.annotation.CircuitBreaker;
+
 import es.gob.radarcovid.efgs.client.EfgsDownloadClientService;
 import es.gob.radarcovid.efgs.client.model.EfgsDownload;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,10 @@ public class EfgsDownloadCircuitBreakerClientImpl implements EfgsDownloadClientS
     private final EfgsDownloadClientService efgsDownloadClientService;
 
     @Override
+	@CircuitBreaker(maxAttemptsExpression = "#{${application.efgs.download-diagnosis-keys.download.circuit-breaker.max-attempts:3}}", 
+		openTimeoutExpression = "#{${application.efgs.download-diagnosis-keys.download.circuit-breaker.open-timeout:5000}}")
     public Optional<EfgsDownload> download(LocalDate date, String batchTag) {
-        log.debug("Entering EfgsDownloadCircuitBreakerClientImpl.download()");
+        log.debug("Entering EfgsDownloadCircuitBreakerClientImpl.download('{}', '{}')", date, batchTag);
         Optional<EfgsDownload> result = efgsDownloadClientService.download(date, batchTag);
         log.debug("Leaving EfgsDownloadCircuitBreakerClientImpl.download() with: {} results", 
         		result.map(d -> d.getDiagnosisKeyBatch().getKeysList().size()).orElse(0));

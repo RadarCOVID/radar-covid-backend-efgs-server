@@ -76,7 +76,7 @@ public class EfgsAuditDownloadRetryableRestClientServiceImpl implements EfgsAudi
 				throw ex;
 			}
 		}
-		log.debug("Leaving EfgsAuditDownloadRetryableRestClientServiceImpl.auditDownload with: {} results", result.map(List::size).orElse(0));
+		log.debug("Leaving EfgsAuditDownloadRetryableRestClientServiceImpl.auditDownload() with: {} results", result.map(List::size).orElse(0));
 		return result;
 	}
 

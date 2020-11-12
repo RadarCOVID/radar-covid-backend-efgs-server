@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+import org.springframework.retry.annotation.CircuitBreaker;
+
 @RequiredArgsConstructor
 @Slf4j
 public class EfgsUploadDiagnosisKeysCircuitBreakerClientServiceImpl implements EfgsUploadDiagnosisKeysClientService {
@@ -23,6 +25,8 @@ public class EfgsUploadDiagnosisKeysCircuitBreakerClientServiceImpl implements E
     private final EfgsUploadDiagnosisKeysClientService client;
 
     @Override
+	@CircuitBreaker(maxAttemptsExpression = "#{${application.efgs.upload-diagnosis-keys.circuit-breaker.max-attempts:3}}", 
+		openTimeoutExpression = "#{${application.efgs.upload-diagnosis-keys.circuit-breaker.open-timeout:5000}}")
     public Optional<String> uploadDiagnosisKeys(UploadKeysPayloadDto uploadKeysPayload) {
         log.debug("Entering EfgsUploadDiagnosisKeysCircuitBreakerClientImpl.uploadDiagnosisKeys()");
         Optional<String> result = client.uploadDiagnosisKeys(uploadKeysPayload);

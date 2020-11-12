@@ -49,7 +49,7 @@ public class EfgsDownloadRetryableRestClientServiceImpl implements EfgsDownloadC
 	@Retryable(maxAttemptsExpression = "#{${application.efgs.download-diagnosis-keys.download.retry.max-attempts:1}}", 
 		backoff = @Backoff(delayExpression = "#{${application.efgs.download-diagnosis-keys.download.retry.delay:100}}"))
 	public Optional<EfgsDownload> download(LocalDate date, String batchTag) {
-		log.debug("Entering EfgsDownloadClientServiceImpl.download('{}', '{}')", date, batchTag);
+		log.debug("Entering EfgsDownloadRetryableRestClientServiceImpl.download('{}', '{}')", date, batchTag);
 		
         X509Certificate certificate = CertUtils.loadCertificateFromFile(efgsProperties.getCredentials().getAuthentication().getCertificate());
 
@@ -87,7 +87,7 @@ public class EfgsDownloadRetryableRestClientServiceImpl implements EfgsDownloadC
 				throw ex;
 			}
 		}
-		log.debug("Leaving EfgsDownloadClientServiceImpl.download with: {} results", result.map(d -> d.getDiagnosisKeyBatch().getKeysList().size()).orElse(0));
+		log.debug("Leaving EfgsDownloadRetryableRestClientServiceImpl.download() with: {} results", result.map(d -> d.getDiagnosisKeyBatch().getKeysList().size()).orElse(0));
 		return result;
 	}
 
