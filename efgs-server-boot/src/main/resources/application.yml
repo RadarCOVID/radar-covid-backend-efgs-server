@@ -62,6 +62,7 @@ application:
   efgs:
     retention-days: 6
     country: 'ES'
+    country-list: BE,BG,CZ,DK,DE,EE,ES,IE,GR,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE,IS,LI,NO,CH
     ssl:
       enabled: ${EFGS_SSL_ENABLED:true}
       key-store: classpath:radarcovid-ta.jks
@@ -84,7 +85,6 @@ application:
       json-version: 1.0
     upload-diagnosis-keys:
       enabled: ${EFGS_UPLOAD_DIAGNOSIS_KEYS_ENABLED:true}
-      country-list: BE,BG,CZ,DK,DE,EE,IE,GR,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE,IS,LI,NO,CH
       default-values:
         transmission-risk-level: ${EFGS_DEFAULT_TRANSMISSION_RISK_LEVEL:2}
         report-type: ${EFGS_DEFAULT_REPORT_TYPE:CONFIRMED_TEST}

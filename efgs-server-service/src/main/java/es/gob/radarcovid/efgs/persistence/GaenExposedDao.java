@@ -9,14 +9,16 @@
  */
 package es.gob.radarcovid.efgs.persistence;
 
-import es.gob.radarcovid.efgs.persistence.model.GaenExposedDto;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
+import es.gob.radarcovid.efgs.persistence.model.GaenExposedDto;
+
 public interface GaenExposedDao {
 
+	@Transactional(readOnly=true)
     List<GaenExposedDto> findPendingByCountry(String country, Integer page, Integer size);
 
     @Transactional

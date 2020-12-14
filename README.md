@@ -15,7 +15,7 @@ EFGS Service in terms of the Radar COVID project enables the connectivity with [
 These are the frameworks and tools used to develop the solution:
 
 - [Java 11](https://openjdk.java.net/).
-- [Maven](https://maven.apache.org/).
+- [Maven 3.6](https://maven.apache.org/).
 - [Spring Boot](https://spring.io/projects/spring-boot) version 2.3.
 - [Lombok](https://projectlombok.org/), to help programmer. Developers have to include the IDE plugin to support Lombok features (ie, for Eclipse based IDE, go [here](https://projectlombok.org/setup/eclipse)).
 - [ArchUnit](https://www.archunit.org/) is used to check Java architecture.

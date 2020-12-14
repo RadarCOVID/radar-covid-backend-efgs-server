@@ -16,6 +16,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "t_gaen_exposed")
@@ -57,6 +59,9 @@ public class GaenExposedEntity implements Serializable {
 
     @Column(name = "batch_tag")
     private String batchTag;
+    
+    @OneToMany(mappedBy = "gaenExposed")
+    private Set<VisitedEntity> visitedCountries = new HashSet<>();
 
     public EfgsProto.ReportType getReportType() {
         return EfgsProto.ReportType.valueOf(reportType);

@@ -9,13 +9,14 @@
  */
 package es.gob.radarcovid.efgs;
 
-import es.gob.radarcovid.efgs.etc.EfgsProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+import es.gob.radarcovid.efgs.etc.EfgsProperties;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
@@ -25,7 +26,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class EfgsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(EfgsApplication.class, args);
+        System.exit(SpringApplication
+                .exit(SpringApplication.run(EfgsApplication.class, args)));
     }
 
 }

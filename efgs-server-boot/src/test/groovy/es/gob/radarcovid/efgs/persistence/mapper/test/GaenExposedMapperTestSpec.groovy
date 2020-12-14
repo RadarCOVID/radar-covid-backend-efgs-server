@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 
 import es.gob.radarcovid.efgs.etc.EfgsProperties
 import es.gob.radarcovid.efgs.persistence.entity.GaenExposedEntity
+import es.gob.radarcovid.efgs.persistence.entity.VisitedEntity
 import es.gob.radarcovid.efgs.persistence.mapper.GaenExposedMapper
 import es.gob.radarcovid.efgs.persistence.model.GaenExposedDto
 import eu.interop.federationgateway.model.EfgsProto.ReportType
@@ -48,11 +49,12 @@ class GaenExposedMapperTestSpec extends Specification {
 		dto.reportType == efgsProperties.uploadDiagnosisKeys.defaultValues.reportType
 		dto.daysSinceOnset == (entity.daysSinceOnset != null ? entity.daysSinceOnset : 1)
 		dto.efgsSharing == entity.efgsSharing
+		dto.visitedCountries.size() == entity.visitedCountries.size()
 
 		where:
 		entity << [
-			createEntity(1, 'key1', 13, 5, 8, LocalDateTime.now(), 11, true),
-			createEntity(2, 'key2', 13, 144, 3, LocalDateTime.now(), -11, true),
+			createEntity(1, 'key1', 13, 5, 8, LocalDateTime.now(), 11, true, 'IT', 'FR', 'DE'),
+			createEntity(2, 'key2', 13, 144, 3, LocalDateTime.now(), -11, true, 'ES'),
 			createEntity(3, 'key3', null, null, null, LocalDateTime.now(), null, false)
 		]
 	}
@@ -73,17 +75,18 @@ class GaenExposedMapperTestSpec extends Specification {
 		entity.reportType == dto.reportType
 		entity.daysSinceOnset == dto.daysSinceOnset
 		entity.efgsSharing == dto.efgsSharing
+		entity.visitedCountries.size() == dto.visitedCountries.size()
 
 		where:
 		dto << [
-			createDto('key1', 13, 5, 8, LocalDateTime.now(), 'ES', ReportType.CONFIRMED_TEST, 11, true),
-			createDto('key2', 13, 144, 3, LocalDateTime.now(), 'DE', ReportType.CONFIRMED_CLINICAL_DIAGNOSIS, -11, true),
+			createDto('key1', 13, 5, 8, LocalDateTime.now(), 'ES', ReportType.CONFIRMED_TEST, 11, true, 'IT', 'FR', 'DE'),
+			createDto('key2', 13, 144, 3, LocalDateTime.now(), 'DE', ReportType.CONFIRMED_CLINICAL_DIAGNOSIS, -11, true, 'ES'),
 			createDto('key3', null, null, null, LocalDateTime.now(), null, ReportType.SELF_REPORT, null, false)
 		]
 	}
 
 	def createEntity(Integer id, String key, Integer rollingStartNumber, Integer rollingPeriod, Integer transmissionRiskLevel,
-			LocalDateTime receivedAt, Integer daysSinceOnset, Boolean efgsSharing) {
+			LocalDateTime receivedAt, Integer daysSinceOnset, Boolean efgsSharing, String... visitedCountries) {
 		def entity = new GaenExposedEntity()
 		entity.setId(id)
 		entity.setKey(key)
@@ -93,11 +96,19 @@ class GaenExposedMapperTestSpec extends Specification {
 		entity.setReceivedAt(receivedAt)
 		entity.setDaysSinceOnset(daysSinceOnset)
 		entity.setEfgsSharing(efgsSharing)
+		
+		visitedCountries.stream().forEach({country -> 
+			def visitedEntity = new VisitedEntity()
+			visitedEntity.setCountry(country)
+			entity.visitedCountries.add(visitedEntity)
+		} )
+
 		return entity
 	}
 
 	def createDto(String key, Integer rollingStartNumber, Integer rollingPeriod, Integer transmissionRiskLevel,
-			LocalDateTime receivedAt, String countryOrigin, ReportType reportType, Integer daysSinceOnset, Boolean efgsSharing) {
+			LocalDateTime receivedAt, String countryOrigin, ReportType reportType, Integer daysSinceOnset, Boolean efgsSharing,
+			String... visitedCountries) {
 		def dto = new GaenExposedDto()
 		dto.setKey(key)
 		dto.setRollingStartNumber(rollingStartNumber)
@@ -108,6 +119,7 @@ class GaenExposedMapperTestSpec extends Specification {
 		dto.setReportType(reportType)
 		dto.setDaysSinceOnset(daysSinceOnset)
 		dto.setEfgsSharing(efgsSharing)
+		dto.setVisitedCountries(visitedCountries as Set)
 		return dto
 	}
 }

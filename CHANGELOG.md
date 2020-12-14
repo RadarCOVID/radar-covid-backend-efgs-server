@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 
 
+## [Unreleased]
+
+### Added
+
+- Download keys service save visited countries in database.
+
 ## [1.1.0.RELEASE] - 2020-11-12
 
 ### Added

@@ -25,6 +25,7 @@ public class EfgsProperties {
     private int retentionDays = 14;
 
     private String country;
+    private List<String> countryList;
 
     private final Credentials credentials = new Credentials();
     private final Ssl ssl = new Ssl();
@@ -84,7 +85,6 @@ public class EfgsProperties {
     @Setter
     public static class UploadDiagnosisKeys {
         private boolean enabled;
-        private List<String> countryList;
         private int maximumUploadBatchSize = 5000;
         private String url;
         private final Retry retry = new Retry();

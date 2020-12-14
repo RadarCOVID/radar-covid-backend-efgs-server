@@ -9,11 +9,13 @@
  */
 package es.gob.radarcovid.efgs.persistence.model;
 
-import eu.interop.federationgateway.model.EfgsProto;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import eu.interop.federationgateway.model.EfgsProto;
+import lombok.Data;
 
 @Data
 public class GaenExposedDto implements Serializable {
@@ -37,6 +39,8 @@ public class GaenExposedDto implements Serializable {
     private Boolean efgsSharing;
 
     private String batchTag;
+    
+    private Set<String> visitedCountries = new HashSet<>();
 
     public EfgsProto.ReportType getReportType() {
         return EfgsProto.ReportType.valueOf(reportType);
