@@ -49,8 +49,8 @@ public class GaenExposedDaoImpl implements GaenExposedDao {
     @Override
     public int saveAll(List<GaenExposedDto> gaenExposedDtos) {
     	AtomicInteger total = new AtomicInteger(0);
-		gaenExposedDtos.stream().forEach(dto -> {
-			int saved = repository.saveUpdateOnConflict(
+    	gaenExposedDtos.stream().forEach(dto -> {
+			repository.saveOnConflictUpdate(
 					dto.getKey(), 
 					dto.getRollingStartNumber(),
 					dto.getRollingPeriod(), 
@@ -60,9 +60,10 @@ public class GaenExposedDaoImpl implements GaenExposedDao {
 					dto.getReportType().getNumber(), 
 					dto.getDaysSinceOnset(), 
 					dto.getEfgsSharing(), 
-					dto.getBatchTag());
-			total.addAndGet(saved);
-		});
+					dto.getBatchTag(),
+					dto.getVisitedCountries());
+			total.addAndGet(1);
+    	});
         return total.get();
     }
 

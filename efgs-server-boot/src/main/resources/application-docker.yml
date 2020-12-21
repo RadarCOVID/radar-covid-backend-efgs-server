@@ -1,12 +1,8 @@
-server:
-  ssl:
-    enabled: false
-
 application:
   efgs:
+    ssl:
+      enabled: false
     upload-diagnosis-keys:
       simulate: true
-      batching.cron: 0 */5 * * * ?
     download-diagnosis-keys:
       simulate: true
-      batching.cron: 0 */5 * * * ?

@@ -9,50 +9,46 @@
  */
 package es.gob.radarcovid.efgs.config;
 
+import java.util.Arrays;
+
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.protobuf.ProtobufEfgsHttpMessageConverter;
 import org.springframework.http.converter.protobuf.ProtobufJsonFormatHttpMessageConverter;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.SSLContext;
-import java.util.Arrays;
+import es.gob.radarcovid.efgs.etc.EfgsProperties;
+import es.gob.radarcovid.efgs.etc.EfgsProperties.Ssl;
 
 @Configuration
 @EnableRetry
 public class RestClientConfiguration {
 
-	@Value("${server.ssl.enabled: false}")
-	private Boolean sslEnabled;
-	@Value("${server.ssl.trust-store-password}")
-	private String trustStorePassword;
-	@Value("${server.ssl.trust-store}")
-	private Resource trustStore;
-	@Value("${server.ssl.key-store-password}")
-	private String keyStorePassword;
-	@Value("${server.ssl.key-store}")
-	private Resource keyStore;
+    @Autowired
+    EfgsProperties efgsProperties;
 
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder,
 			ProtobufEfgsHttpMessageConverter ehmc,
 			ProtobufJsonFormatHttpMessageConverter jhmc) throws Exception {
 		
-		if (sslEnabled) {
+		Ssl ssl = efgsProperties.getSsl();
+		if (ssl.isEnabled()) {
 
 			SSLContext sslcontext = SSLContexts.custom()
-					.loadTrustMaterial(trustStore.getURL(), trustStorePassword.toCharArray())
-					.loadKeyMaterial(keyStore.getURL(), keyStorePassword.toCharArray(), keyStorePassword.toCharArray())
+					.loadTrustMaterial(ssl.getTrustStore().getURL(), ssl.getTrustStorePassword().toCharArray())
+					.loadKeyMaterial(ssl.getKeyStore().getURL(), ssl.getKeyStorePassword().toCharArray(), ssl.getKeyStorePassword().toCharArray())
 					.build();
 			SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslcontext,
 					new NoopHostnameVerifier());

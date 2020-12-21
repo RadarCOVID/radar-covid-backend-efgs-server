@@ -55,8 +55,8 @@ public class EfgsDownloadRetryableRestClientServiceImpl implements EfgsDownloadC
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(EfgsMediaTypeEnum.PROTOBUF_MEDIA_TYPE.toMediaType(efgsProperties.getContentNegotiation().getProtobufVersion())));
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
+        headers.set(efgsProperties.getSsl().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
+        headers.set(efgsProperties.getSsl().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
 		if (batchTag != null) {
 			headers.set(Constants.HEADER_BATCH_TAG, batchTag);
 		}

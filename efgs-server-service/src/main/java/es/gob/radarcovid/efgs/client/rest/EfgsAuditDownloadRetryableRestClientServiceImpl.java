@@ -54,8 +54,8 @@ public class EfgsAuditDownloadRetryableRestClientServiceImpl implements EfgsAudi
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(EfgsMediaTypeEnum.JSON_MEDIA_TYPE.toMediaType(efgsProperties.getContentNegotiation().getProtobufVersion())));
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
+        headers.set(efgsProperties.getSsl().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
+        headers.set(efgsProperties.getSsl().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
 
 		UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(efgsProperties.getDownloadDiagnosisKeys().getAudit().getUrl()).path("/")
 				.path(date.format(DateTimeFormatter.ISO_LOCAL_DATE)).path("/").path(batchTag);

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2020 Gobierno de España
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,4 +7,4 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package es.gob.radarcovid.efgs.api;
+package es.gob.radarcovid.efgs.util.test

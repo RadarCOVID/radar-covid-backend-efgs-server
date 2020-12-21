@@ -13,7 +13,7 @@
 
     <groupId>es.gob.radarcovid</groupId>
     <artifactId>efgs-server-parent</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.2.0.RELEASE</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>EFGS Service</description>
     <packaging>pom</packaging>
@@ -441,6 +441,7 @@
                                 <exclude>src/test/resources/**</exclude>
                                 <exclude>src/main/resources/**</exclude>
                                 <exclude>src/main/asciidoc/**</exclude>
+                                <exclude>src/main/certificates/**</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
@@ -580,7 +581,6 @@
     </build>
 
     <modules>
-        <module>efgs-server-api</module>
         <module>efgs-server-boot</module>
         <module>efgs-server-service</module>
     </modules>

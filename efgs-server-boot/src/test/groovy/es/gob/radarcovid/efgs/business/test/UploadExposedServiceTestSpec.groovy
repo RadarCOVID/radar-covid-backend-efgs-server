@@ -11,6 +11,8 @@ package es.gob.radarcovid.efgs.business.test
 
 import es.gob.radarcovid.common.exception.EfgsCodeError
 import es.gob.radarcovid.common.exception.EfgsServerException
+import es.gob.radarcovid.dpppt.utils.GaenUnit
+import es.gob.radarcovid.dpppt.utils.UTCInstant
 import es.gob.radarcovid.efgs.business.UploadExposedService
 import es.gob.radarcovid.efgs.client.impl.EfgsUploadDiagnosisKeysClientServiceImpl
 import es.gob.radarcovid.efgs.persistence.BatchJobExecutionDao
@@ -34,6 +36,7 @@ import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -134,6 +137,9 @@ class UploadExposedServiceTestSpec extends Specification {
 	}
 
 	def createExposedEntity(String key, int rollingStartNumber, String originCountry, boolean efgsSharing) {
+		Duration timeSkew = Duration.ofHours(2);
+		def expiry = UTCInstant.of(rollingStartNumber + 144, GaenUnit.TenMinutes).plus(timeSkew);
+		
 		def GaenExposedEntity dto = new GaenExposedEntity()
 		dto.setKey(Base64.getEncoder().encodeToString(key.getBytes('UTF-8')))
 		dto.setRollingStartNumber(rollingStartNumber.intValue())
@@ -144,6 +150,7 @@ class UploadExposedServiceTestSpec extends Specification {
 		dto.setReportType(ReportType.CONFIRMED_TEST)
 		dto.setDaysSinceOnset(0)
 		dto.setEfgsSharing(efgsSharing)
+		dto.setExpiry(expiry.getLocalDateTime())
 		return dto
 	}
 }

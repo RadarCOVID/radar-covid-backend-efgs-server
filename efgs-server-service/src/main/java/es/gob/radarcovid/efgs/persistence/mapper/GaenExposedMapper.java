@@ -27,7 +27,7 @@ import es.gob.radarcovid.efgs.persistence.entity.GaenExposedEntity;
 import es.gob.radarcovid.efgs.persistence.model.GaenExposedDto;
 import eu.interop.federationgateway.model.EfgsProto;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = VisitedMapper.class)
 public abstract class GaenExposedMapper {
 
 	@Autowired
@@ -67,7 +67,7 @@ public abstract class GaenExposedMapper {
 				.setOrigin(gaenExposedDto.getCountryOrigin())
 				.setReportType(gaenExposedDto.getReportType())
 				.setDaysSinceOnsetOfSymptoms(gaenExposedDto.getDaysSinceOnset())
-				.addAllVisitedCountries(efgsProperties.getUploadDiagnosisKeys().getCountryList())
+				.addAllVisitedCountries(efgsProperties.getCountryList())
 				.build();
 	}
 	
@@ -78,7 +78,8 @@ public abstract class GaenExposedMapper {
 		@Mapping(target = "countryOrigin", source = "origin"),
 		@Mapping(target = "daysSinceOnset", ignore = true),
 		@Mapping(target = "efgsSharing", ignore = true),
-		@Mapping(target = "batchTag", ignore = true)
+		@Mapping(target = "batchTag", ignore = true),
+		@Mapping(target = "visitedCountries", source = "visitedCountriesList")
 	})
 	public abstract GaenExposedDto diagnosisKeyToDto(EfgsProto.DiagnosisKey diagnosisKey);
 	

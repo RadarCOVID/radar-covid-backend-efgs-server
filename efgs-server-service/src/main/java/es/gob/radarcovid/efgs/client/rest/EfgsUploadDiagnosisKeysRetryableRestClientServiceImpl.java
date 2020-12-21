@@ -48,8 +48,8 @@ public class EfgsUploadDiagnosisKeysRetryableRestClientServiceImpl implements Ef
         headers.setContentType(EfgsMediaTypeEnum.PROTOBUF_MEDIA_TYPE.toMediaType(efgsProperties.getContentNegotiation().getProtobufVersion()));
         headers.set(Constants.HEADER_BATCH_TAG, uploadKeysPayload.getBatchTag());
         headers.set(Constants.HEADER_BATCH_SIGNATURE, uploadKeysPayload.getBatchSignature());
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
-        headers.set(efgsProperties.getCertAuth().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
+        headers.set(efgsProperties.getSsl().getHeaderFields().getThumbprint(), CertUtils.getCertThumbprint(certificate));
+        headers.set(efgsProperties.getSsl().getHeaderFields().getDistinguishedName(), "C=" + efgsProperties.getCountry());
 
         HttpEntity httpEntity = new HttpEntity(uploadKeysPayload.getDiagnosisKeyBatch(), headers);
 

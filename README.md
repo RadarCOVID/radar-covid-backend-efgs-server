@@ -15,7 +15,7 @@ EFGS Service in terms of the Radar COVID project enables the connectivity with [
 These are the frameworks and tools used to develop the solution:
 
 - [Java 11](https://openjdk.java.net/).
-- [Maven](https://maven.apache.org/).
+- [Maven 3.6](https://maven.apache.org/).
 - [Spring Boot](https://spring.io/projects/spring-boot) version 2.3.
 - [Lombok](https://projectlombok.org/), to help programmer. Developers have to include the IDE plugin to support Lombok features (ie, for Eclipse based IDE, go [here](https://projectlombok.org/setup/eclipse)).
 - [ArchUnit](https://www.archunit.org/) is used to check Java architecture.
@@ -64,8 +64,13 @@ If you want to run the application inside a docker in local, once you built it, 
 
 ```shell
 docker-compose up -d postgres
-docker-compose up -d backend
+docker-compose run backend <job>
 ```
+
+Where `<job>` has these possible values:
+- `uploadDiagnosisKeys`. To upload diagnosis keys to EFGS Gateway.
+- `downloadDiagnosisKeys`. To download diagnosis keys from EFGS Gateway.
+- `cleanBatchJobExecution`. To clean old information in database.
 
 #### EFGS Federation Gateway service
 

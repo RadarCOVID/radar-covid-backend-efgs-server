@@ -7,39 +7,43 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package es.gob.radarcovid.efgs.batch;
+package es.gob.radarcovid.efgs.runner;
+
+import org.slf4j.MDC;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import es.gob.radarcovid.efgs.business.DownloadExposedService;
 import es.gob.radarcovid.efgs.etc.Constants;
 import es.gob.radarcovid.efgs.persistence.BatchJobExecutionDao;
 import es.gob.radarcovid.efgs.persistence.model.BatchJobExecutionDto;
 import es.gob.radarcovid.efgs.persistence.vo.BatchJobStatusEnum;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 @ConditionalOnProperty(name = "application.efgs.download-diagnosis-keys.enabled", havingValue = "true")
 @Component
-@RequiredArgsConstructor
+@Order(2)
+@AllArgsConstructor
 @Slf4j
-public class DownloadDiagnosisKeysBatch {
-
+public class DownloadDiagnosisKeysRunner extends EfgsRunner {
+	
 	private static final String DOWNLOAD_JOB_NAME = "downloadDiagnosisKeys";
 
 	private final DownloadExposedService downloadExposedService;
 	private final BatchJobExecutionDao batchJobExecutionDao;
+	
+	@Override
+	public String jobName() {
+		return DOWNLOAD_JOB_NAME;
+	}
 
-    @Scheduled(cron = "${application.efgs.download-diagnosis-keys.batching.cron}", zone = "Europe/Madrid")
-	@SchedulerLock(name = DOWNLOAD_JOB_NAME, lockAtLeastFor = "PT30S", 
-		lockAtMostFor = "${application.efgs.download-diagnosis-keys.batching.lock-limit}")
-	public void efgsDownloadDiagnosisKeysScheduledTask() {
+	@Override
+	public void run() {
 		MDC.put(Constants.TRACKING, "DOWNLOAD_DIAGNOSIS_KEYS");
-		log.info("DownloadDiagnosisKeysBatch process started");
-		
+		log.info("DownloadDiagnosisKeysRunner started");
+
 		BatchJobExecutionDto jobExecution = batchJobExecutionDao.startBatchJob(DOWNLOAD_JOB_NAME);
 		BatchJobStatusEnum status = BatchJobStatusEnum.COMPLETED;
 		try {
@@ -52,8 +56,8 @@ public class DownloadDiagnosisKeysBatch {
 			jobExecution.setStatus(status);
 			batchJobExecutionDao.endBatchJob(jobExecution);
 		}
-		
-		log.info("DownloadDiagnosisKeysBatch process finished");
+
+		log.info("DownloadDiagnosisKeysRunner finished");
 	}
 
 }
