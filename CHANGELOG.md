@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.3.0.RELEASE] - 2021-02-17
+
+### Added
+
+- Added expiry column on gaen exposed table.
+
 ## [1.2.0.RELEASE] - 2020-12-17
 
 ### Added
@@ -33,7 +39,8 @@ All notable changes to this project will be documented in this file.
 
 - New service to integrate Radar COVID with [EU Federation Gateway Service (EFGS)](https://github.com/eu-federation-gateway-service/efgs-federation-gateway).
 
-[Unreleased]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/compare/1.2.0.RELEASE...develop
+[Unreleased]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/compare/1.3.0.RELEASE...develop
+[1.3.0.RELEASE]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/compare/1.2.0.RELEASE...1.3.0.RELEASE
 [1.2.0.RELEASE]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/compare/1.1.0.RELEASE...1.2.0.RELEASE
 [1.1.0.RELEASE]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/compare/1.0.0.RELEASE...1.1.0.RELEASE
 [1.0.0.RELEASE]: https://github.com/RadarCOVID/radar-covid-backend-efgs-server/releases/tag/1.0.0.RELEASE
