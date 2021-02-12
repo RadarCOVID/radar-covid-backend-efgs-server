@@ -61,6 +61,7 @@ application:
     enabled: ${LOGGABLE_ENABLED:true}
   efgs:
     retention-days: 6
+    time-skew: PT2h
     country: 'ES'
     country-list: BE,BG,CZ,DK,DE,EE,ES,IE,GR,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE,IS,LI,NO,CH
     ssl:

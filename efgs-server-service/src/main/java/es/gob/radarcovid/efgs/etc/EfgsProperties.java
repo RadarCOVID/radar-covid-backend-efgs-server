@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 
+import java.time.Duration;
 import java.util.List;
 
 @ConfigurationProperties("application.efgs")
@@ -23,7 +24,7 @@ import java.util.List;
 public class EfgsProperties {
 
     private int retentionDays = 14;
-
+    private Duration timeSkew;
     private String country;
     private List<String> countryList;
 

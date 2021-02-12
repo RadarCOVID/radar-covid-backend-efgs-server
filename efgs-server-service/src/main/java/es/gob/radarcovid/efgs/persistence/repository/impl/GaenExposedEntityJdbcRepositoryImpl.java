@@ -9,17 +9,18 @@
  */
 package es.gob.radarcovid.efgs.persistence.repository.impl;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import es.gob.radarcovid.dpppt.utils.GaenUnit;
 import es.gob.radarcovid.dpppt.utils.UTCInstant;
+import es.gob.radarcovid.efgs.etc.EfgsProperties;
 import es.gob.radarcovid.efgs.persistence.repository.GaenExposedEntityJdbcRepository;
 
 @Repository
@@ -47,15 +48,16 @@ public class GaenExposedEntityJdbcRepositoryImpl implements GaenExposedEntityJdb
 	
     @PersistenceContext
     private EntityManager em;
+    
+    @Autowired
+    private EfgsProperties efgsProperties;
 
 	@Override
 	public void saveOnConflictUpdate(String key, int rollingStartNumber, int rollingPeriod, int transmissionRiskLevel,
 			LocalDateTime receivedAt, String countryOrigin, int reportType, int daysSinceOnset, boolean efgsSharing,
 			String batchTag, Set<String> visitedCountries) {
 		
-		// FIXME: externalize timeSkew value if applicable
-		Duration timeSkew = Duration.ofHours(2);
-	    var expiry = UTCInstant.of(rollingStartNumber + rollingPeriod, GaenUnit.TenMinutes).plus(timeSkew);
+	    var expiry = UTCInstant.of(rollingStartNumber + rollingPeriod, GaenUnit.TenMinutes).plus(efgsProperties.getTimeSkew());
 	    
     	int exposedId = (int) em.createNativeQuery(INSERT_GAEN_EXPOSED_ON_CONFLICT_UPDATE_SQL)
     			.setParameter("key", key)
