@@ -20,11 +20,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "t_visited")
 @IdClass(VisitedEntityId.class)
 @Data
+@EqualsAndHashCode(of = {"exposedId", "country"})
 public class VisitedEntity implements Serializable {
 
     @Id
