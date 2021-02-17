@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Added expiry column on gaen exposed table.
+- Added origin country as visited country.
 
 ## [1.2.0.RELEASE] - 2020-12-17
 

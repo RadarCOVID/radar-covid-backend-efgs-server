@@ -40,7 +40,10 @@ public abstract class GaenExposedMapper {
 	})
 	public abstract GaenExposedDto entityToDto(GaenExposedEntity entity);
 	
-	@Mapping(target = "id", ignore = true)
+	@Mappings({
+		@Mapping(target = "id", ignore = true),
+		@Mapping(target = "expiry", ignore = true)
+	})
 	public abstract GaenExposedEntity dtoToEntity(GaenExposedDto dto);
 
 	@AfterMapping
@@ -89,6 +92,7 @@ public abstract class GaenExposedMapper {
 		dto.setReceivedAt(LocalDateTime.now());
 		dto.setDaysSinceOnset(normalizeDSOS(diagnosisKey.getDaysSinceOnsetOfSymptoms()));
 		dto.setEfgsSharing(true);
+		dto.getVisitedCountries().add(diagnosisKey.getOrigin());
 	}
 
 	private int normalizeDSOS(int dsos) {
