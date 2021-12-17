@@ -13,7 +13,7 @@
 
     <groupId>es.gob.radarcovid</groupId>
     <artifactId>efgs-server-parent</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1.RELEASE</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>EFGS Service</description>
     <packaging>pom</packaging>
@@ -47,14 +47,14 @@
         <jackson-bom.version>2.11.2</jackson-bom.version>
         <jackson-protobuf.version>0.9.12</jackson-protobuf.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
-        <log4j2.version>2.13.3</log4j2.version>
+        <log4j2.version>2.15.0</log4j2.version>
         <lombok.version>1.18.12</lombok.version>
         <mapstruct.version>1.4.0.Final</mapstruct.version>
         <protobuf-java-version>3.12.1</protobuf-java-version>
         <shedlock.version>4.14.0</shedlock.version>
         <spock.version>2.0-M3-groovy-3.0</spock.version>
         <springdoc-openapi.version>1.4.8</springdoc-openapi.version>
-        <testcontainers.version>1.15.0-rc2</testcontainers.version>
+        <testcontainers.version>1.16.2</testcontainers.version>
     </properties>
 
     <profiles>
